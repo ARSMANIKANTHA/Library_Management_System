@@ -3,9 +3,11 @@ package Users;
 import java.util.Scanner;
 
 public class LoginService {
-    Database db = new Database();
+    Database db;
+    public LoginService(Database db){
+        this.db = db;
+    }
     Scanner sc = new Scanner(System.in);
-
     public void Login() {
         System.out.println("Login : Enter 1 (press Enter) \nRegister : Enter 2 (press Enter)");
         int userSelection = sc.nextInt();
@@ -24,15 +26,15 @@ public class LoginService {
         }
     }
 
-    private void validateUser(String userID, String password) {
-        User tempUser = db.usersDB().get(userID);
+    private void validateUser(String email, String password) {
+        User tempUser = db.usersDB().get(email);
         if (tempUser == null) {
             System.out.println("====ERROR:User Doesn't exist====");
             return;
         }
-        if (userID.equals(tempUser.userID) && password.equals(tempUser.passWord)) {
+        if (email.equals(tempUser.email) && password.equals(tempUser.passWord)) {
             System.out.println("Validation Successful");
-            initiateSession(tempUser);
+            tempUser.listActions();
             return;
         }
         System.out.println("Invalid Credentials");
@@ -52,18 +54,19 @@ public class LoginService {
         System.out.println("Enter Gender: ");
         sc.next();
         String Gender = sc.nextLine();
-
-        User tempUser = new Member(firstName, lastName, age, Gender);
-        db.addUser(tempUser);
-
+        System.out.println("Enter Your Email: ");
+        String email = sc.next();
+        User tempUser = new Member(firstName, lastName, age, Gender,email);
+        db.addNewUser(tempUser);
         System.out.printf(
                 "Registration is Successful..!!\n USER NAME : %s\n Temporary Password: %s\n(Change temporary password...)",
-                tempUser.userID, tempUser.passWord);
+                tempUser.email, tempUser.passWord);
+        Login();
 
     }
 
-    void initiateSession(User loggedInUser) {
-        Session session = new Session();
-        session.startSession(loggedInUser);
-    }
+    // void initiateSession(User loggedInUser) {
+    //     Session session = new Session();
+    //     session.startSession(loggedInUser);
+    // }
 }
