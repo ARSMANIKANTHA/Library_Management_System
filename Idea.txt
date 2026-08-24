@@ -1,0 +1,82 @@
+Library Management System:
+Library
+
+Users:
+	- Librarian
+	- Reader
+	- Author
+	- Publisher
+
+Objects:
+	- Books
+	#Can be added later
+	- Magazines
+	- Newspapers
+
+Properties of a libaray:
+	Library Name
+	Library ID
+	Location
+	No of employees
+	Library Head
+
+Transaction Class:
+	Transaction ID (Unique ID for each Transaction)
+	Book ISBN (Unique ID to identify each book)
+	Borrow Date
+	Return Date
+	User Name
+
+What are the properties of a book???
+-A book can have 
+	- Book Name (Title)
+	- Published Year
+	- Author
+	- Genre
+	- Book Unique ID (ISBN Number)
+	- Borrowed by
+	- Borrowed date
+	- Cost of the book
+	- Return date
+	- Number of copies 
+	
+# What can be done with the book:
+1. A book can be borrowed
+2. Book can be returned
+
+- A user can have:
+	- User Name ( Full Name: First Name and Last Name)
+	- User Age
+	- Gender
+	- User role
+	
+- Types of users:
+	1. Author
+		All above
+		Published Date
+		Book title
+		Book ISBN
+	#Writes books, updates the book contents if needed
+		
+	2. Reader
+		All above
+		UserID
+		Library ID
+		Books Borrowed
+		Borrowed Date
+		
+	#Can borrow, return
+		
+	3.Publisher
+		Publisher ID
+		Published Books (Name and ISBN)
+		Published 
+	#can publish, can track no of books in each library, no of copies sold out
+		
+	4. Libraian
+		All above
+		Library ID 
+		Role
+	
+	#Can track: What kind of genre is most selling,  Who is the frequent customer,
+	Who is the most liked author, Who are the frequent customer (male or female), How frequent a customer is to the library.
