@@ -28,8 +28,6 @@ class Member extends User{
         Scanner sc = new Scanner(System.in);
         String ISBN = sc.next();
         sc.close();
-
-
     }
     void returnBook(){
         System.out.println("Returned a book");

@@ -64,9 +64,4 @@ public class LoginService {
         Login();
 
     }
-
-    // void initiateSession(User loggedInUser) {
-    //     Session session = new Session();
-    //     session.startSession(loggedInUser);
-    // }
 }

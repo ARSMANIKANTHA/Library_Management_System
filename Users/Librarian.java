@@ -3,7 +3,9 @@ import java.util.Scanner;
 import Books.Book;
 public class Librarian extends User{
 
-    String[] availableActions = {"Add User","Remove User","Update User Info","Approve Borrow","Reject Borrow","Add Fine","Accept Fine","Withdraw Fine","Add Book","Remove A book","Update Book Info","List all users"};
+    String[] availableActions = {"Add User","Remove User","Update User Info","Add Book",
+    "Remove A book","Update Book Info","List all users","List all Books","Approve Borrow",
+    "Reject Borrow","Add Fine","Accept Fine","Withdraw Fine"};
     
     //Librarian Constructors...
     public Librarian(){}
@@ -27,22 +29,30 @@ public class Librarian extends User{
        int input = sc.nextInt();
        switch(input){
         case 1: addUser();
-        printAllUsers();
         break;
-        case 2: 
-        System.out.println("Enter User ID");
-        // removeUser(email);
+        case 2: removeUser();
+        break;
+        case 4:
+            addBook();
+            break;
+        case 5: removeBook();
+        break;
+        case 7: printAllUsers();
+        break;
+        case 8: printAllBooks();
         break;
         default:
             System.out.println("This is the default code...");
        }
+       listActions();
     }
 
+    //Printing all the users
     public void printAllUsers(){
         System.out.println("\n==========:- USERS LIST -:==========");
         for(User a : db.usersDB().values()){
             System.out.println("\n----------------------");
-            System.out.printf("Full Name: %s %s \nAge: %d\nGender: %s\nUser Type: %s\nUser ID: %s\nPassword: %s",a.firstName,a.lastName,a.age,a.Gender,a.email,a.passWord);
+            System.out.printf("Full Name: %s %s \nAge: %d\nGender: %s\nUser ID: %s\nPassword: %s",a.firstName,a.lastName,a.age,a.Gender,a.email,a.passWord);
             System.out.println("\n----------------------");
         }
         System.out.println("\n==========:- END OF LIST -:==========");
@@ -50,7 +60,6 @@ public class Librarian extends User{
 
     // User Functionalities
     public void addUser(){
-        sc = new Scanner(System.in);
         System.out.println("==== ADDING NEW USER ====");
         System.out.println("**** Enter New User Details ****");
         System.out.println("Enter FirstName: ");
@@ -58,10 +67,11 @@ public class Librarian extends User{
         System.out.println("Enter LastName: ");
         String lastName = sc.next();
         System.out.println("Enter Age: ");
-        sc.next();
         int age = sc.nextInt();
+        sc.nextLine();
         System.out.println("Enter Gender: ");
         String Gender = sc.next();
+        System.out.println("Enter Your Gmail: ");
         String email = sc.next();
         System.out.println("Enter Your email Address: ");
         System.out.println("Checking the list of Users");
@@ -76,6 +86,9 @@ public class Librarian extends User{
 
     //Remove a user
     public void removeUser(){
+        System.out.println("Enter User ID");
+        sc.nextLine();
+        System.out.println("Enter User's Email address whom you want to remove: ");
         String email = sc.next();
         if(db.userExistence(email)){
             db.removeUser(email);
@@ -100,39 +113,49 @@ public class Librarian extends User{
     
     //Need to update the functionality
 
-    // //Book Functionalities....
-    // void addBook(){
-    //     Book newBook = getBookDetails();
-    //     db.booksData.put(newBook.getISBN(),newBook);
-    // }
-
+    //Book Functionalities....
+    void addBook(){
+        System.out.println("=====> Adding a Book to the Library <=====");
+        getBookDetails();
+    }
+    
     //getBookDetails
-    Book getBookDetails(){
-        Scanner sc = new Scanner(System.in);
+    void getBookDetails(){
         System.out.println("Enter Book Name:");
         String bookName = sc.next();
         System.out.println("Enter Book ISBN");
+        // sc.next();
         String ISBN = sc.next();
         System.out.println("Enter Author Name");
         String authorName = sc.next();
+        System.out.println("Enter Book's Published Date: ");
         String publishedDate = sc.next();
+        System.out.println("Enter Book Genre: ");
         String genre = sc.next();
-        sc.next();
+        System.out.println("Enter Number of Copies: ");
         int noOfCopies = sc.nextInt();
-        return new Book(bookName,ISBN,authorName,publishedDate,genre,noOfCopies);
+        if(db.bookExistence(ISBN)){
+            System.out.println("Book Already Exists...!");
+            return;
+        }
+        db.addBook(new Book(bookName,ISBN,authorName,publishedDate,genre,noOfCopies));
+        return;
     }
 
-    // void removeBook(){
-    //     Scanner sc = new Scanner(System.in);
-    //     String bookISBN = sc.next();
-    //     int noOfCopies = sc.nextInt();
-    //     int curCount = db.booksData.get(bookISBN).getNoOfCopies();
-    //     if(curCount >= noOfCopies ){
-    //         int newValue = db.booksData.get(bookISBN).getNoOfCopies() - noOfCopies;
-    //         db.booksData.get(bookISBN).setNoOfCopies(newValue);
-    //         System.out.println(noOfCopies+" has been removed Successfully...");
-    //     }else{
-    //         System.out.printf("==== ERROR: %d of books are not available ====",noOfCopies);
-    //     }
-    // }
+    void removeBook(){
+        System.out.println("Enter ISBN of the Book that you want to remove..!\nISBN: ");
+        String bookISBN = sc.next();
+        if(db.bookExistence(bookISBN)){
+            System.out.println("How many copies of the book you want to remove..");
+            int noOfCopies = sc.nextInt();
+            int curCount = db.getBook(bookISBN).getNoOfCopies();
+            if(curCount >= noOfCopies ){
+                int newValue = db.getBook(bookISBN).getNoOfCopies() - noOfCopies;
+                db.getBook(bookISBN).setNoOfCopies(newValue);
+                System.out.println(noOfCopies+" has been removed Successfully...");
+            }else{
+                System.out.printf("==== ERROR: %d of books are not available ====",noOfCopies);
+            }
+        }
+    }
 }
