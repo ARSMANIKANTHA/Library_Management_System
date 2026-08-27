@@ -1,4 +1,5 @@
 package Books;
+import java.util.*;
 public class Book {
     private String bookName;
     private String ISBN;
@@ -6,6 +7,9 @@ public class Book {
     private String publishedDate;
     private String Genre;
     private int noOfCopies;
+
+    //Borrowal Information:
+    public ArrayList<borrowalData> borrowalList = new ArrayList<>();
 
     public Book(){}
     public Book(String bookName,String ISBN, String autorName, String publishedDate,String Genre, int noOfCopies){

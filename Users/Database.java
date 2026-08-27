@@ -1,7 +1,8 @@
 package Users;
-import java.lang.instrument.Instrumentation;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Scanner;
 
 import Books.Book;
@@ -10,6 +11,7 @@ class Database {
     
     private static final HashMap<String,Book> booksData = new HashMap<>();
     private static final HashMap<String,User> usersData = new HashMap<>(Map.of("admin",new Librarian("admin","admin",28,"Male","admin")));
+    public static final Queue<Requests> bookRequests = new ArrayDeque<>();
     Database(){}
 
     //User Info
@@ -17,15 +19,17 @@ class Database {
         return usersData;
     }
 
+    public Queue<Requests> requestsDB(){
+        return bookRequests;
+    }
+
     public HashMap<String,Book> booksDB(){
         return booksData;
     }
 
     public boolean userExistence(String email){
-        for(User i : usersData.values()){
-            if(i.email.equals(email)){
-                return true;
-            }
+        if(usersData.containsKey(email)){
+            return true;
         }
         return false;
     }

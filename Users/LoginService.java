@@ -44,8 +44,8 @@ public class LoginService {
 
     void registerUser() {
         System.out.println("====USER REGISTRATION====");
+        sc.nextLine();
         System.out.println("Enter FirstName: ");
-        sc.next();
         String firstName = sc.nextLine();
         System.out.println("Enter LastName: ");
         String lastName = sc.nextLine();

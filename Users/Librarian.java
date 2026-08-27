@@ -1,12 +1,11 @@
 package Users;
 import java.util.Scanner;
 import Books.Book;
+import Books.borrowalData;
 public class Librarian extends User{
 
-    String[] availableActions = {"Add User","Remove User","Update User Info","Add Book",
-    "Remove A book","Update Book Info","List all users","List all Books","Approve Borrow",
-    "Reject Borrow","Add Fine","Accept Fine","Withdraw Fine"};
-    
+    String[] availableActions = {"Add User","Remove User","Add Book",
+    "Remove A book","List all users","List all Books","Check Borrow Requests"};
     //Librarian Constructors...
     public Librarian(){}
 
@@ -32,48 +31,41 @@ public class Librarian extends User{
         break;
         case 2: removeUser();
         break;
-        case 4:
-            addBook();
-            break;
-        case 5: removeBook();
+        case 3:addBook();
         break;
-        case 7: printAllUsers();
+        case 4: removeBook();
         break;
-        case 8: printAllBooks();
+        case 5: printAllUsers();
+        break;
+        case 6: printAllBooks();
+        break;
+        case 7: checkRequests();
+        break;
+        case 100: switchLogin();
         break;
         default:
-            System.out.println("This is the default code...");
+            System.out.println("END OF CODE");
        }
        listActions();
     }
 
-    //Printing all the users
-    public void printAllUsers(){
-        System.out.println("\n==========:- USERS LIST -:==========");
-        for(User a : db.usersDB().values()){
-            System.out.println("\n----------------------");
-            System.out.printf("Full Name: %s %s \nAge: %d\nGender: %s\nUser ID: %s\nPassword: %s",a.firstName,a.lastName,a.age,a.Gender,a.email,a.passWord);
-            System.out.println("\n----------------------");
-        }
-        System.out.println("\n==========:- END OF LIST -:==========");
-    }
-
-    // User Functionalities
+     // User Functionalities
+     //Add User
     public void addUser(){
         System.out.println("==== ADDING NEW USER ====");
         System.out.println("**** Enter New User Details ****");
         System.out.println("Enter FirstName: ");
-        String firstName = sc.next();
+        sc.nextLine();
+        String firstName = sc.nextLine();
         System.out.println("Enter LastName: ");
-        String lastName = sc.next();
+        String lastName = sc.nextLine();
         System.out.println("Enter Age: ");
         int age = sc.nextInt();
         sc.nextLine();
         System.out.println("Enter Gender: ");
-        String Gender = sc.next();
-        System.out.println("Enter Your Gmail: ");
-        String email = sc.next();
-        System.out.println("Enter Your email Address: ");
+        String Gender = sc.nextLine();
+        System.out.println("Enter Your email: ");
+        String email = sc.nextLine();
         System.out.println("Checking the list of Users");
         if(!db.userExistence(email)){
             db.addNewUser(new Member(firstName,lastName,age,Gender,email));
@@ -84,12 +76,12 @@ public class Librarian extends User{
         return;
     }
 
-    //Remove a user
+    //Remove User
     public void removeUser(){
         System.out.println("Enter User ID");
         sc.nextLine();
         System.out.println("Enter User's Email address whom you want to remove: ");
-        String email = sc.next();
+        String email = sc.nextLine();
         if(db.userExistence(email)){
             db.removeUser(email);
             return;
@@ -98,22 +90,21 @@ public class Librarian extends User{
         return;
     }
 
+     //Book Functionalities....
 
-    void approveBorrowal(){
-        System.out.println("Borrowal approved");
-    }
-
-    void approveReturn(){
-        System.out.println("Approved return");
-    }
-
-    void addFine(){
-        System.out.println("Fined user");
-    }
     
-    //Need to update the functionality
+    //To check book presence
+    boolean isAvailable(String ISBN){
+        if(db.bookExistence(ISBN)){
+            if(db.getBook(ISBN).getNoOfCopies() < 1){
+                System.out.println("All Copies are borrowed");
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
 
-    //Book Functionalities....
     void addBook(){
         System.out.println("=====> Adding a Book to the Library <=====");
         getBookDetails();
@@ -122,16 +113,17 @@ public class Librarian extends User{
     //getBookDetails
     void getBookDetails(){
         System.out.println("Enter Book Name:");
-        String bookName = sc.next();
+        sc.nextLine();
+        String bookName = sc.nextLine();
         System.out.println("Enter Book ISBN");
         // sc.next();
-        String ISBN = sc.next();
+        String ISBN = sc.nextLine();
         System.out.println("Enter Author Name");
-        String authorName = sc.next();
+        String authorName = sc.nextLine();
         System.out.println("Enter Book's Published Date: ");
-        String publishedDate = sc.next();
+        String publishedDate = sc.nextLine();
         System.out.println("Enter Book Genre: ");
-        String genre = sc.next();
+        String genre = sc.nextLine();
         System.out.println("Enter Number of Copies: ");
         int noOfCopies = sc.nextInt();
         if(db.bookExistence(ISBN)){
@@ -142,6 +134,7 @@ public class Librarian extends User{
         return;
     }
 
+    //REMOVING A BOOK
     void removeBook(){
         System.out.println("Enter ISBN of the Book that you want to remove..!\nISBN: ");
         String bookISBN = sc.next();
@@ -158,4 +151,59 @@ public class Librarian extends User{
             }
         }
     }
+
+    //Printing all the users
+    public void printAllUsers(){
+        System.out.println("\n==========:- USERS LIST -:==========");
+        for(User a : db.usersDB().values()){
+            System.out.println("\n----------------------");
+            System.out.printf("Full Name: %s %s \nAge: %d\nGender: %s\nUser ID: %s\nPassword: %s",a.firstName,a.lastName,a.age,a.Gender,a.email,a.passWord);
+            System.out.println("\n----------------------");
+        }
+        System.out.println("\n==========:- END OF LIST -:==========");
+    }
+
+    // To check the requests (If there are requests, and for each request check book availability and then assign the book)
+    void checkRequests(){
+        System.out.println(db.requestsDB());
+        if(!db.requestsDB().isEmpty()){
+            for(Requests req : db.requestsDB()){
+                String ISBN = req.requestedBook.getISBN();
+                if(isAvailable(ISBN)){
+                    //Book is allocated once it is available...
+                    System.out.println("USER \""+ req.requestedUser.firstName + "\"has requested for the Book \"" + req.requestedBook.getBookName() +"\" and it is Available..!");
+                    db.booksDB().get(ISBN).setNoOfCopies(db.booksDB().get(ISBN).getNoOfCopies()-1);
+                    approveBorrowal(req.requestedBook, req.requestedUser,req.requestDate,req.noOfDays);
+                }else{
+                    rejectBorrowal();
+                }
+            }
+        }else{
+            System.out.println("Db is empty");
+        }
+    }
+
+    //When approving the book, applying changes to the Database and adding requests to the queue...
+    void approveBorrowal(Book book,User user,String startDate,String noOfDays){
+        System.out.println("Book is allocated and info is added to the Borrowal list...!");
+        borrowalData bd = new borrowalData(user,"startdate",noOfDays,startDate+noOfDays);
+        book.borrowalList.add(bd);
+    }
+
+
+     //Upcoming Features Features....to be added once remaining dev completed
+    void addFine(){
+        System.out.println("Fined user");
+    }
+    
+    void approveReturn(){
+        System.out.println("Approved return");
+    }
+ 
+    void rejectBorrowal(){
+        System.out.println("Book is not available!! Check after few Days...");
+    }
+    // updateBookDetails()
+    // updateUserInfo()
+    // "Add Fine","Accept Fine","Withdraw Fine"
 }
