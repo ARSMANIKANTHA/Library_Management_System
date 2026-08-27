@@ -9,7 +9,7 @@ public class Book {
     private int noOfCopies;
 
     //Borrowal Information:
-    public ArrayList<borrowalData> borrowalList = new ArrayList<>();
+    public ArrayList<borrowedUser> borrowalList = new ArrayList<>();
 
     public Book(){}
     public Book(String bookName,String ISBN, String autorName, String publishedDate,String Genre, int noOfCopies){

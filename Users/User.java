@@ -10,7 +10,7 @@ public abstract class User{
     protected String Gender;
     protected String email;
     //Automatic fields
-    private static int userCount = 0;
+    // private static int userCount = 0;
 
     //session Switch (This is for just testing purpose...)
     void switchLogin(){
@@ -26,7 +26,7 @@ public abstract class User{
         this.Gender = Gender;
         this.email = email;
         this.passWord = firstName;
-        User.userCount++;
+        // User.userCount++;
     }
     User(){}
 

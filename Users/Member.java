@@ -1,10 +1,11 @@
 package Users;
-
+import java.util.ArrayList;
 import java.util.Scanner;
-
+import Books.borrowedBook;
 class Member extends User{
 
-    String[] availableActions = {"List All Books","Request A book","Return A book","Pay Fine","Update self Details","Delete My account"};
+    public ArrayList<borrowedBook> borrowedBooks = new ArrayList<>();
+    String[] availableActions = {"List All Books","Request A book","Return A book","List My Borrowals"};
     public Member(String firstName,String lastName,int age,String Gender,String email){
         super(firstName,lastName,age, Gender,email);
     }
@@ -30,9 +31,9 @@ class Member extends User{
             break;
             case 3: returnBook();
             break;
-            case 4:payFine();
+            case 4:listMyBorrowals();
             break;
-            case 100: switchLogin();
+            case 100:switchLogin();
             default:
                 System.out.println("Feature is not available");
        }
@@ -51,7 +52,6 @@ class Member extends User{
             String  days = sc.nextLine(); //Need to add int variable for days
             Requests newRequest = new Requests(this,db.booksDB().get(borrowISBN),"today",days);
             db.requestsDB().offer(newRequest);
-            System.out.println("******Requests---Queue******"+ db.bookRequests);
             System.out.println("Your Request has been added to the queue...!");
             return;
         }
@@ -59,9 +59,35 @@ class Member extends User{
         return;
     }
 
-    void returnBook(){
-        System.out.println("Returned a book");
+    // List my borrowals
+    void listMyBorrowals(){
+        for(borrowedBook b : borrowedBooks){
+            System.out.printf("Book Name: %s\nBook ISBN: %S\nBorrow Date: %s\nNo of Days: %s\n\n",
+                b.book.getBookName(),b.book.getISBN(),b.borrowalDate,b.noOfDays
+            );
+        }
+        System.out.println("Do you want to return any Book?? (If yes Press 1)");
+        int input = sc.nextInt();
+        if(input == 1){
+            returnBook();
+            return;
+        }else{
+             System.out.println("THANK YOU 😊");
+        }
     }
+
+    //Return the Book
+    void returnBook(){
+        System.out.println("=== BOOK RETUNR ===");
+        String returnISBN = sc.nextLine();
+        for(borrowedBook b : borrowedBooks){
+            if(b.book.getISBN() == returnISBN){
+                
+            }
+        }
+    }
+//Future 
+// ,"Update self Details","Delete My account"
 
     void payFine(){
         System.out.println("Fine pay completed");

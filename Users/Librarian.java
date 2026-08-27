@@ -1,7 +1,8 @@
 package Users;
 import java.util.Scanner;
 import Books.Book;
-import Books.borrowalData;
+import Books.borrowedBook;
+import Books.borrowedUser;
 public class Librarian extends User{
 
     String[] availableActions = {"Add User","Remove User","Add Book",
@@ -185,8 +186,12 @@ public class Librarian extends User{
 
     //When approving the book, applying changes to the Database and adding requests to the queue...
     void approveBorrowal(Book book,User user,String startDate,String noOfDays){
-        System.out.println("Book is allocated and info is added to the Borrowal list...!");
-        borrowalData bd = new borrowalData(user,"startdate",noOfDays,startDate+noOfDays);
+        System.out.println("===Allocating Book to the User===");
+        System.out.println("===Updating the Database with the latest Borrowals");
+        System.out.println("===Updating the User DB with latest Borrowals===");
+        borrowedUser bd = new borrowedUser(user,"startdate",noOfDays,startDate+noOfDays);
+        borrowedBook bb = new borrowedBook(book, startDate, noOfDays, noOfDays);
+        ((Member)user).borrowedBooks.add(bb);
         book.borrowalList.add(bd);
     }
 
