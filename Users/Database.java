@@ -11,17 +11,31 @@ class Database {
     
     private static final HashMap<String,Book> booksData = new HashMap<>();
     private static final HashMap<String,User> usersData = new HashMap<>(Map.of("admin",new Librarian("admin","admin",28,"Male","admin")));
-    public static final Queue<Requests> bookRequests = new ArrayDeque<>();
-    Database(){}
+    public static final Queue<borrowRequests> bookRequests = new ArrayDeque<>();
+    public static final Queue<ReturnRequests> returnRequests = new ArrayDeque<>();
+    static{
+        usersData.put("Mani",new Member("Mani","Mani",23,"Male","Mani"));
+        booksData.put("ISBN1", new Book("Book1","ISBN1", "Author-1", "Date1","Genre1", 2));
+        booksData.put("ISBN2", new Book("Book2","ISBN2", "Author-1", "Date2","Genre2", 3));
+    }
+    Database(){
+    }
+
+    // Temporary data for testing...
 
     //User Info
     public HashMap<String,User> usersDB(){
         return usersData;
     }
 
-    public Queue<Requests> requestsDB(){
+    public Queue<borrowRequests> requestsDB(){
         return bookRequests;
     }
+    
+    public Queue<ReturnRequests> returnsDB(){
+        return returnRequests;
+    }
+
 
     public HashMap<String,Book> booksDB(){
         return booksData;

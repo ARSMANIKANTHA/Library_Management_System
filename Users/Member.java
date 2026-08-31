@@ -2,7 +2,7 @@ package Users;
 import java.util.ArrayList;
 import java.util.Scanner;
 import Books.borrowedBook;
-class Member extends User{
+public class Member extends User{
 
     public ArrayList<borrowedBook> borrowedBooks = new ArrayList<>();
     String[] availableActions = {"List All Books","Request A book","Return A book","List My Borrowals"};
@@ -10,7 +10,7 @@ class Member extends User{
         super(firstName,lastName,age, Gender,email);
     }
     
-    Member(){}
+    public Member(){}
 
     Scanner sc = new Scanner(System.in);
     //list actions
@@ -35,7 +35,7 @@ class Member extends User{
             break;
             case 100:switchLogin();
             default:
-                System.out.println("Feature is not available");
+            System.out.println("Feature is not available");
        }
     }
 
@@ -50,7 +50,7 @@ class Member extends User{
             System.out.println("Book is Available..!");
             System.out.println("Enter no of Borrowal Days (Value should be less than 10): ");//need to add constraints
             String  days = sc.nextLine(); //Need to add int variable for days
-            Requests newRequest = new Requests(this,db.booksDB().get(borrowISBN),"today",days);
+            borrowRequests newRequest = new borrowRequests(this,db.booksDB().get(borrowISBN),"today",days);
             db.requestsDB().offer(newRequest);
             System.out.println("Your Request has been added to the queue...!");
             return;
@@ -78,11 +78,19 @@ class Member extends User{
 
     //Return the Book
     void returnBook(){
-        System.out.println("=== BOOK RETUNR ===");
+        sc.nextLine();
+        System.out.println("=== BOOK RETUNRN ===");
+        System.out.println("Enter ISBN of the Book that You want to return: ");
         String returnISBN = sc.nextLine();
-        for(borrowedBook b : borrowedBooks){
-            if(b.book.getISBN() == returnISBN){
-                
+        for(borrowedBook b: borrowedBooks){
+            if(b.book.getISBN().equals(returnISBN)){
+                ReturnRequests newReturn = new ReturnRequests(this, b.book,"return date");
+                db.returnsDB().add(newReturn);
+                System.out.println("Return Request has been added to the Queue...!");
+                return;
+            }else{
+                System.out.println("Entered ISBN is not valid...Please Try again..!");
+                return;
             }
         }
     }

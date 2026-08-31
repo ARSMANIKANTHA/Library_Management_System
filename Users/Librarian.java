@@ -1,4 +1,5 @@
 package Users;
+import java.util.ArrayList;
 import java.util.Scanner;
 import Books.Book;
 import Books.borrowedBook;
@@ -6,7 +7,7 @@ import Books.borrowedUser;
 public class Librarian extends User{
 
     String[] availableActions = {"Add User","Remove User","Add Book",
-    "Remove A book","List all users","List all Books","Check Borrow Requests"};
+    "Remove A book","List all users","List all Books","Check Borrow Requests","Check Return Requests"};
     //Librarian Constructors...
     public Librarian(){}
 
@@ -41,6 +42,8 @@ public class Librarian extends User{
         case 6: printAllBooks();
         break;
         case 7: checkRequests();
+        break;
+        case 8: checkReturns();
         break;
         case 100: switchLogin();
         break;
@@ -168,7 +171,7 @@ public class Librarian extends User{
     void checkRequests(){
         System.out.println(db.requestsDB());
         if(!db.requestsDB().isEmpty()){
-            for(Requests req : db.requestsDB()){
+            for(borrowRequests req : db.requestsDB()){
                 String ISBN = req.requestedBook.getISBN();
                 if(isAvailable(ISBN)){
                     //Book is allocated once it is available...
@@ -193,6 +196,31 @@ public class Librarian extends User{
         borrowedBook bb = new borrowedBook(book, startDate, noOfDays, noOfDays);
         ((Member)user).borrowedBooks.add(bb);
         book.borrowalList.add(bd);
+    }
+
+    //Check returns
+
+    void checkReturns(){
+        System.out.println("=== Returns in the QUEUE ===");
+        for(ReturnRequests req : db.returnsDB()){
+            System.out.println("Return is in progress.....");
+            System.out.println("User : "+req.requestedUser +" User: "+ req.requestedBook);
+            int curCopies = db.booksDB().get(req.requestedBook.getISBN()).getNoOfCopies();
+            db.booksDB().get(req.requestedBook.getISBN()).setNoOfCopies(curCopies+1);
+            //Updating the Book database:
+            ArrayList<borrowedUser> removals = new ArrayList<>();
+            for(borrowedUser b : req.requestedBook.borrowalList){
+                if(b.user.email == req.requestedUser.email){
+                    removals.add(b);
+                    System.out.println("Book is removed from the Queue...");
+                }
+            }
+            for(borrowedUser rem : removals){
+                req.requestedBook.borrowalList.remove(rem);
+            }
+            System.out.println("Book is returned successfully...!");
+        }
+        return;
     }
 
 
