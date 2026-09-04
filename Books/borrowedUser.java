@@ -5,8 +5,8 @@ import Users.User;
 public class borrowedUser extends borrowalInfo{
     public User user;
 
-    public borrowedUser(User user, String borrowDate,String noOfDays, String deadLine) {
+    public borrowedUser(User user, String borrowDate,int noOfDays, String deadLine) {
         this.user = user;
-        super(borrowDate,deadLine,noOfDays);
+        super(borrowDate,noOfDays,deadLine);
     }
 }

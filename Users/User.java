@@ -1,7 +1,5 @@
 package Users;
-
 import Books.Book;
-
 public abstract class User{
     protected String firstName;
     protected String lastName;
@@ -9,8 +7,6 @@ public abstract class User{
     protected int age;
     protected String Gender;
     protected String email;
-    //Automatic fields
-    // private static int userCount = 0;
 
     //session Switch (This is for just testing purpose...)
     void switchLogin(){
@@ -26,7 +22,6 @@ public abstract class User{
         this.Gender = Gender;
         this.email = email;
         this.passWord = firstName;
-        // User.userCount++;
     }
     User(){}
 
@@ -60,8 +55,6 @@ public abstract class User{
             +" | " +b.getGenre()+" ".repeat(maxLenGenre-b.getGenre().length())
             +" | " +b.getNoOfCopies()+" |");
             System.out.println("-".repeat(maxLenBook+maxLenAuthor+maxLenGenre+noOfCopies.length()+otherExtraCharLen));
-        }
-        
+        }   
     }
-
 }

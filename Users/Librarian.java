@@ -187,12 +187,12 @@ public class Librarian extends User{
     }
 
     //When approving the book, applying changes to the Database and adding requests to the queue...
-    void approveBorrowal(Book book,User user,String startDate,String noOfDays){
+    void approveBorrowal(Book book,User user,String startDate,int noOfDays){
         System.out.println("===Allocating Book to the User===");
         System.out.println("===Updating the Database with the latest Borrowals");
         System.out.println("===Updating the User DB with latest Borrowals===");
-        borrowedUser bd = new borrowedUser(user,"startdate",noOfDays,startDate+noOfDays);
-        borrowedBook bb = new borrowedBook(book, startDate, noOfDays, noOfDays);
+        borrowedUser bd = new borrowedUser(user,"startdate",noOfDays,"deadLine");
+        borrowedBook bb = new borrowedBook(book, startDate, noOfDays, "deadLine");
         ((Member)user).borrowedBooks.add(bb);
         book.borrowalList.add(bd);
     }

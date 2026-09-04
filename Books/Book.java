@@ -8,7 +8,7 @@ public class Book {
     private String Genre;
     private int noOfCopies;
 
-    //Borrowal Information:
+    //Borrowal Information for specific book:
     public ArrayList<borrowedUser> borrowalList = new ArrayList<>();
 
     public Book(){}

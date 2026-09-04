@@ -22,7 +22,6 @@ class Database {
     }
 
     // Temporary data for testing...
-
     //User Info
     public HashMap<String,User> usersDB(){
         return usersData;
@@ -41,6 +40,7 @@ class Database {
         return booksData;
     }
 
+    // To check User presence
     public boolean userExistence(String email){
         if(usersData.containsKey(email)){
             return true;
@@ -50,11 +50,8 @@ class Database {
 
     //Check for Book existence
     public boolean bookExistence(String ISBN){
-        for(Book b: booksData.values()){
-            System.out.println(b.getISBN()+"-->"+ISBN);
-            if(b.getISBN().equals(ISBN) ){
-                return true;
-            }
+        if(booksData.containsKey(ISBN)){
+            return true;
         }
         return false;
     }
