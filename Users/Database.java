@@ -1,11 +1,13 @@
 package Users;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Scanner;
 
 import Books.Book;
+import Books.borrowalInfo;
 
 class Database {
     
@@ -19,6 +21,21 @@ class Database {
         booksData.put("ISBN2", new Book("Book2","ISBN2", "Author-1", "Date2","Genre2", 3));
     }
     Database(){
+    }
+
+    //borrowal Information
+    public static ArrayList<borrowalInfo> borrowData = new ArrayList<>();
+
+    //send user their borrowalInfo
+    public void getBorrowals(User user){
+        
+        System.out.println("List of your Borrowals....");
+        for(borrowalInfo b: borrowData){
+            if(b.getUserName().email.equals(user.email)){
+                System.out.println(b.getBookName().getBookName());
+            }
+        }
+        return;
     }
 
     // Temporary data for testing...

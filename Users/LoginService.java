@@ -2,7 +2,6 @@ package Users;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.regex.Pattern;
-
 import CustomExceptions.InvalidEmailException;
 import CustomExceptions.DuplicateEmailException;
 

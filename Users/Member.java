@@ -1,16 +1,12 @@
 package Users;
-
-import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import Books.borrowedBook;
+import Books.Book;
 import CustomExceptions.InvalidFieldException;
 import CustomExceptions.ObjectNotFoundException;
 
 public class Member extends User {
-
-    public ArrayList<borrowedBook> borrowedBooks = new ArrayList<>();
-    String[] availableActions = { "List All Books", "Request A book", "Return A book", "List My Borrowals" };
+    String[] availableActions = { "List All Books", "Request A book", "Return A book", "List My Borrowals","New Notifications" };
 
     public Member(String firstName, String lastName, int age, String Gender, String email) {
         super(firstName, lastName, age, Gender, email);
@@ -20,6 +16,7 @@ public class Member extends User {
     }
 
     Scanner sc = new Scanner(System.in);
+
 
     // list actions
     @Override
@@ -45,6 +42,9 @@ public class Member extends User {
             case 4:
                 listMyBorrowals();
                 break;
+            case 5:
+                listNotifications();
+                break;
             case 100:
                 switchLogin();
             default:
@@ -56,11 +56,13 @@ public class Member extends User {
         printAllBooks();
         System.out.println("Choose any book from above available books.");
         String borrowISBN = null;
+        Book availableBook;
         while (true) {
             try {
                 System.out.println("Enter Book ISBN: ");
                 borrowISBN = sc.nextLine();
                 if (db.bookExistence(borrowISBN)) {
+                    availableBook = db.getBook(borrowISBN);
                     break;
                 }
                 throw new ObjectNotFoundException("Book with ISBN " + borrowISBN + " is Not Found");
@@ -68,7 +70,7 @@ public class Member extends User {
                 System.out.println(e.getMessage());
             }
         }
-        if (db.getBook(borrowISBN).getNoOfCopies() == 0) {
+        if (availableBook.getNoOfCopies() == 0) {
             System.out.println("Book is not avaialble at the moment..!");
             return;
         }
@@ -93,7 +95,7 @@ public class Member extends User {
                 sc.nextLine();
             }
         }
-        borrowRequests newRequest = new borrowRequests(this, db.booksDB().get(borrowISBN), "today", days);
+        borrowRequests newRequest = new borrowRequests(this, availableBook, "today", days);
         db.requestsDB().offer(newRequest);
         System.out.println("Your Request has been added to the queue...!");
         return;
@@ -101,43 +103,33 @@ public class Member extends User {
 
     // List my borrowals
     void listMyBorrowals() {
-        for (borrowedBook b : borrowedBooks) {
-            System.out.printf("Book Name: %s\nBook ISBN: %S\nBorrow Date: %s\nNo of Days: %s\n\n",
-                    b.book.getBookName(), b.book.getISBN(), b.borrowalDate, b.noOfDays);
-        }
-        System.out.println("Do you want to return any Book?? (If yes Press 1)");
-        int input = sc.nextInt();
-        if (input == 1) {
-            returnBook();
-            return;
-        } else {
-            System.out.println("THANK YOU 😊");
-        }
+        //how to list all my borrowals
+       db.getBorrowals(this);
     }
 
     // Return the Book
     void returnBook() {
         sc.nextLine();
         System.out.println("=== BOOK RETUNRN ===");
-        System.out.println("Enter ISBN of the Book that You want to return: ");
-        String returnISBN = sc.nextLine();
-        for (borrowedBook b : borrowedBooks) {
-            if (b.book.getISBN().equals(returnISBN)) {
-                ReturnRequests newReturn = new ReturnRequests(this, b.book, "return date");
-                db.returnsDB().add(newReturn);
-                System.out.println("Return Request has been added to the Queue...!");
-                return;
-            } else {
-                System.out.println("Entered ISBN is not valid...Please Try again..!");
-                return;
+        String returnISBN = null;
+        while(true){
+            try{
+                System.out.println("Enter ISBN of the Book that You want to return: ");
+                returnISBN = sc.nextLine();
+                if(!db.bookExistence(returnISBN)){
+                    throw new InputMismatchException("Please check the entered ISBN value...");
+                }else{
+                    break;
+                }
+            }catch(InputMismatchException e){
+                System.out.println(e.getMessage());
+                sc.nextLine();
             }
         }
-    }
-    // Future
-    // ,"Update self Details","Delete My account"
 
-    void payFine() {
-        System.out.println("Fine pay completed");
+        //ReturnRequests(User reqUser, Book reqBook, String reqDate)
+        ReturnRequests newReturnRequest = new ReturnRequests(this, db.booksDB().get(returnISBN), "today");
+        db.returnsDB().offer(newReturnRequest);
+        System.out.println("Return request has been successfully added to the queue");
     }
-
 }

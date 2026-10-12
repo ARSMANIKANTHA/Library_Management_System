@@ -1,5 +1,6 @@
 package Users;
 import Books.Book;
+import java.util.*;
 public abstract class User{
     protected String firstName;
     protected String lastName;
@@ -7,6 +8,7 @@ public abstract class User{
     protected int age;
     protected String Gender;
     protected String email;
+    protected ArrayList<String> Notifications = new ArrayList<>();
 
     //session Switch (This is for just testing purpose...)
     void switchLogin(){
@@ -14,7 +16,9 @@ public abstract class User{
         login.Login();
     }
 
-    Database db = new Database();
+    final Database db = new Database();
+
+    // Above 2 lines of code is for testing only
     public User(String firstName,String lastName,int age,String Gender,String email){
         this.firstName = firstName;
         this.lastName = lastName;
@@ -28,6 +32,22 @@ public abstract class User{
 
     //common methods for both Librarian or Member
     abstract void listActions();
+
+    //adding notifications to the queue...
+    public void Notify(String message){
+        Notifications.add(message);
+    }
+
+    //list new notifications
+    protected void listNotifications(){
+        if(Notifications.isEmpty()){
+            System.out.println("No new Notifications!!!");
+        }
+        for(String notification : Notifications){
+            System.out.println(notification);
+        }
+        Notifications = null;
+    }
 
      //Printing all the Books
     void printAllBooks(){
@@ -46,11 +66,11 @@ public abstract class User{
         }
         int otherExtraCharLen = 11;
         System.out.println("-".repeat(maxLenBook+maxLenAuthor+maxLenGenre+noOfCopies.length()+otherExtraCharLen));
-        System.out.println("| Book Name"+" ".repeat(maxLenBook-bookName.length())+" | "+"Author Name"+" ".repeat(maxLenAuthor-authorName.length())+" | "+"Genre"+" ".repeat(maxLenGenre-genre.length())+" | "+"No of Copies");
+        System.out.println("|Book ISBN"+"".repeat(3)+"| Book Name"+" ".repeat(maxLenBook-bookName.length())+" | "+"Author Name"+" ".repeat(maxLenAuthor-authorName.length())+" | "+"Genre"+" ".repeat(maxLenGenre-genre.length())+" | "+"No of Copies");
         System.out.println("-".repeat(maxLenBook+maxLenAuthor+maxLenGenre+noOfCopies.length()+otherExtraCharLen));
         //table Logic
         for(Book b : db.booksDB().values()){
-            System.out.println("| "+b.getBookName()+" ".repeat(maxLenBook-b.getBookName().length())
+            System.out.println("| "+b.getISBN()+" ".repeat(3)+"| "+b.getBookName()+" ".repeat(maxLenBook-b.getBookName().length())
             +" | "+b.getAuthorName()+" ".repeat(maxLenAuthor-b.getAuthorName().length())
             +" | " +b.getGenre()+" ".repeat(maxLenGenre-b.getGenre().length())
             +" | " +b.getNoOfCopies()+" |");

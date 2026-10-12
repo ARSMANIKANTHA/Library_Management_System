@@ -1,5 +1,4 @@
 package Books;
-import java.util.*;
 public class Book {
     private String bookName;
     private String ISBN;
@@ -8,9 +7,7 @@ public class Book {
     private String Genre;
     private int noOfCopies;
 
-    //Borrowal Information for specific book:
-    public ArrayList<borrowedUser> borrowalList = new ArrayList<>();
-
+    //constructors for the book class
     public Book(){}
     public Book(String bookName,String ISBN, String autorName, String publishedDate,String Genre, int noOfCopies){
         this.bookName = bookName;
@@ -20,8 +17,8 @@ public class Book {
         this.noOfCopies = noOfCopies;
         this.publishedDate = publishedDate;
     }
+
     //getter method to get individual prop of an object
-    
     public String getBookName(){
         return bookName;
     }
@@ -41,7 +38,7 @@ public class Book {
         return noOfCopies;
     }
     public void setNoOfCopies(int n){
-       noOfCopies = n;
+       noOfCopies += n;
     }
 
     

@@ -1,12 +1,10 @@
 package Users;
-import java.util.ArrayList;
 import java.util.Scanner;
 import Books.Book;
-import Books.borrowedBook;
-import Books.borrowedUser;
+import Books.borrowalInfo;
 public class Librarian extends User{
 
-    String[] availableActions = {"Add User","Remove User","Add Book",
+    String[] availableActions = {"List Notifications","Add User","Remove User","Add Book",
     "Remove A book","List all users","List all Books","Check Borrow Requests","Check Return Requests"};
     //Librarian Constructors...
     public Librarian(){}
@@ -23,12 +21,14 @@ public class Librarian extends User{
        System.out.println("What do you want to do today??");
        System.out.println("===> Available Actions <===");
        for(int i=0;i<availableActions.length;i++){
-        System.out.printf("%d: %s\n",i+1,availableActions[i]);
+        System.out.printf("%d: %s\n",i,availableActions[i]);
        }
        System.out.println("===> End of the List <===");
        System.out.println("Enter your Action");
        int input = sc.nextInt();
        switch(input){
+        case 0: listNotifications();
+        break;
         case 1: addUser();
         break;
         case 2: removeUser();
@@ -168,21 +168,23 @@ public class Librarian extends User{
 
     // To check the requests (If there are requests, and for each request check book availability and then assign the book)
     void checkRequests(){
-        System.out.println(db.requestsDB());
         if(!db.requestsDB().isEmpty()){
             for(borrowRequests req : db.requestsDB()){
-                String ISBN = req.requestedBook.getISBN();
+                Book book = req.requestedBook;
+                String ISBN = book.getISBN();
                 if(isAvailable(ISBN)){
                     //Book is allocated once it is available...
+                    
                     System.out.println("USER \""+ req.requestedUser.firstName + "\"has requested for the Book \"" + req.requestedBook.getBookName() +"\" and it is Available..!");
-                    db.booksDB().get(ISBN).setNoOfCopies(db.booksDB().get(ISBN).getNoOfCopies()-1);
+                    db.booksDB().get(ISBN).setNoOfCopies(-1);
                     approveBorrowal(req.requestedBook, req.requestedUser,req.requestDate,req.noOfDays);
                 }else{
                     rejectBorrowal();
+                    req.requestedUser.Notify("The Book "+book.getBookName()+" is not available at the moment...!Try after some time");
                 }
             }
         }else{
-            System.out.println("Db is empty");
+            System.out.println("No New Book Request Found!!");
         }
     }
 
@@ -191,33 +193,24 @@ public class Librarian extends User{
         System.out.println("===Allocating Book to the User===");
         System.out.println("===Updating the Database with the latest Borrowals");
         System.out.println("===Updating the User DB with latest Borrowals===");
-        borrowedUser bd = new borrowedUser(user,"startdate",noOfDays,"deadLine");
-        borrowedBook bb = new borrowedBook(book, startDate, noOfDays, "deadLine");
-        ((Member)user).borrowedBooks.add(bb);
-        book.borrowalList.add(bd);
+        //borrowalInfo(Book b, User u, String startDate, String endDate, int days)
+        System.out.println(db.borrowData.hashCode());
+        db.borrowData.add(new borrowalInfo(book,user,startDate,startDate+noOfDays,noOfDays));
+        user.Notify("Book "+book.getBookName()+" has been allocated for you!! Happy Learning");
+        System.out.println("===Book has been borrowed successfully...!");
     }
 
     //Check returns
 
     void checkReturns(){
         System.out.println("=== Returns in the QUEUE ===");
-        for(ReturnRequests req : db.returnsDB()){
-            System.out.println("Return is in progress.....");
-            System.out.println("User : "+req.requestedUser +" User: "+ req.requestedBook);
-            int curCopies = db.booksDB().get(req.requestedBook.getISBN()).getNoOfCopies();
-            db.booksDB().get(req.requestedBook.getISBN()).setNoOfCopies(curCopies+1);
-            //Updating the Book database:
-            ArrayList<borrowedUser> removals = new ArrayList<>();
-            for(borrowedUser b : req.requestedBook.borrowalList){
-                if(b.user.email == req.requestedUser.email){
-                    removals.add(b);
-                    System.out.println("Book is removed from the Queue...");
-                }
-            }
-            for(borrowedUser rem : removals){
-                req.requestedBook.borrowalList.remove(rem);
-            }
-            System.out.println("Book is returned successfully...!");
+        if(db.requestsDB().isEmpty()){
+            System.out.println("====NO RETURNS ARE LISTED====");
+        }
+        for(ReturnRequests r:db.returnsDB()){
+            System.out.println("=== Book "+r.requestedBook.getBookName()+ " return approval is processing....====");
+            approveReturn(r);
+            System.out.println("===RETURN IS SUCCESSFUL... Database is updated...!===");
         }
         return;
     }
@@ -228,8 +221,9 @@ public class Librarian extends User{
         System.out.println("Fined user");
     }
     
-    void approveReturn(){
-        System.out.println("Approved return");
+    void approveReturn(ReturnRequests curRequest){
+        db.getBook(curRequest.requestedBook.getISBN()).setNoOfCopies(1);
+        curRequest.requestedUser.Notify("Return request of Book c"+curRequest.requestedBook.getBookName()+" has been approved...!");
     }
  
     void rejectBorrowal(){
