@@ -1,7 +1,9 @@
 package Users;
+import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 import Books.Book;
+import Books.borrowalInfo;
 import CustomExceptions.InvalidFieldException;
 import CustomExceptions.ObjectNotFoundException;
 
@@ -104,7 +106,15 @@ public class Member extends User {
     // List my borrowals
     void listMyBorrowals() {
         //how to list all my borrowals
-       db.getBorrowals(this);
+       ArrayList<borrowalInfo> myBorrowals = db.getActiveBorrowals(this);
+       if(myBorrowals.isEmpty()){
+            System.out.println("You haven't borrowed any Books..!");
+       }else{
+            System.out.println("====Borrowal List====");
+            for(borrowalInfo b: myBorrowals){
+                System.out.println(b.getBookName());
+            }
+       }
     }
 
     // Return the Book
@@ -112,13 +122,19 @@ public class Member extends User {
         sc.nextLine();
         System.out.println("=== BOOK RETUNRN ===");
         String returnISBN = null;
+        if(db.getActiveBorrowals(this).isEmpty()){
+            System.out.println("No Active Borrowals...!");
+            return;
+        }
+
         while(true){
             try{
                 System.out.println("Enter ISBN of the Book that You want to return: ");
                 returnISBN = sc.nextLine();
                 if(!db.bookExistence(returnISBN)){
-                    throw new InputMismatchException("Please check the entered ISBN value...");
-                }else{
+                    throw new InputMismatchException("Please check the entered ISBN...");
+                }
+                else{
                     break;
                 }
             }catch(InputMismatchException e){
@@ -126,10 +142,14 @@ public class Member extends User {
                 sc.nextLine();
             }
         }
-
-        //ReturnRequests(User reqUser, Book reqBook, String reqDate)
-        ReturnRequests newReturnRequest = new ReturnRequests(this, db.booksDB().get(returnISBN), "today");
-        db.returnsDB().offer(newReturnRequest);
-        System.out.println("Return request has been successfully added to the queue");
+        for(borrowalInfo b: db.getActiveBorrowals(this)){
+            if(b.getBookName().getISBN().equals(returnISBN)){
+                ReturnRequests newReturnRequest = new ReturnRequests(this, db.booksDB().get(returnISBN), "today");
+                db.returnsDB().offer(newReturnRequest);
+                System.out.println("Return request has been successfully added to the queue");
+            }else{
+                System.out.println("The Book you want to return is not borrowed yet..! Please check ISBN properly..!");
+            }
+        }
     }
 }

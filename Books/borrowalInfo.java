@@ -9,6 +9,7 @@ public class borrowalInfo {
     public String borrowalDate;
     public String deadLine;
     public int noOfDays;
+    private boolean isActive;
 
     public borrowalInfo(Book b, User u, String startDate, String endDate, int days){
         ++borrowalInfo.borrowalId;
@@ -17,6 +18,16 @@ public class borrowalInfo {
         this.borrowalDate = startDate;
         this.deadLine = endDate;
         this.noOfDays = days;
+        this.isActive = true;
+    }
+
+    public boolean getBorrowStatus(){
+        return this.isActive;
+    }
+
+    public void setBorrowStatus(boolean curStatus){
+        this.isActive = curStatus;
+        return;
     }
 
     public User getUserName(){

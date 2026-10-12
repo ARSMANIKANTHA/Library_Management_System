@@ -40,13 +40,13 @@ public abstract class User{
 
     //list new notifications
     protected void listNotifications(){
-        if(Notifications.isEmpty()){
+        if(Notifications.isEmpty() ){
             System.out.println("No new Notifications!!!");
         }
         for(String notification : Notifications){
             System.out.println(notification);
         }
-        Notifications = null;
+        Notifications.clear();
     }
 
      //Printing all the Books

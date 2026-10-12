@@ -27,15 +27,14 @@ class Database {
     public static ArrayList<borrowalInfo> borrowData = new ArrayList<>();
 
     //send user their borrowalInfo
-    public void getBorrowals(User user){
-        
-        System.out.println("List of your Borrowals....");
+    public ArrayList<borrowalInfo> getActiveBorrowals(User user){
+        ArrayList<borrowalInfo> userBorrowals = new ArrayList<>();
         for(borrowalInfo b: borrowData){
-            if(b.getUserName().email.equals(user.email)){
-                System.out.println(b.getBookName().getBookName());
+            if(b.getUserName().email.equals(user.email)  && b.getBorrowStatus()){
+                userBorrowals.add(b);
             }
         }
-        return;
+        return userBorrowals;
     }
 
     // Temporary data for testing...

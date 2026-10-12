@@ -1,4 +1,6 @@
 package Users;
+import java.util.ArrayList;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import Books.Book;
 import Books.borrowalInfo;
@@ -24,8 +26,25 @@ public class Librarian extends User{
         System.out.printf("%d: %s\n",i,availableActions[i]);
        }
        System.out.println("===> End of the List <===");
-       System.out.println("Enter your Action");
-       int input = sc.nextInt();
+       int input=-1;
+       while(true){
+           try{
+            System.out.println("Enter your Action");
+            input = sc.nextInt();
+            if(input == 100){
+                break;
+            }
+            if(input <0 || input >= availableActions.length){
+                throw new InputMismatchException("Choose Correct Option!!");
+            }
+            break;
+        }
+        catch(InputMismatchException e){
+            System.out.println("III");
+            System.out.println(e);
+            sc.nextLine();
+        }
+       }
        switch(input){
         case 0: listNotifications();
         break;
@@ -173,9 +192,9 @@ public class Librarian extends User{
                 Book book = req.requestedBook;
                 String ISBN = book.getISBN();
                 if(isAvailable(ISBN)){
-                    //Book is allocated once it is available...
-                    
                     System.out.println("USER \""+ req.requestedUser.firstName + "\"has requested for the Book \"" + req.requestedBook.getBookName() +"\" and it is Available..!");
+                    System.out.println("===Allocating Book to the User===");
+                    System.out.println("===Updating the User DB with latest Borrowals===");
                     db.booksDB().get(ISBN).setNoOfCopies(-1);
                     approveBorrowal(req.requestedBook, req.requestedUser,req.requestDate,req.noOfDays);
                 }else{
@@ -190,11 +209,7 @@ public class Librarian extends User{
 
     //When approving the book, applying changes to the Database and adding requests to the queue...
     void approveBorrowal(Book book,User user,String startDate,int noOfDays){
-        System.out.println("===Allocating Book to the User===");
         System.out.println("===Updating the Database with the latest Borrowals");
-        System.out.println("===Updating the User DB with latest Borrowals===");
-        //borrowalInfo(Book b, User u, String startDate, String endDate, int days)
-        System.out.println(db.borrowData.hashCode());
         db.borrowData.add(new borrowalInfo(book,user,startDate,startDate+noOfDays,noOfDays));
         user.Notify("Book "+book.getBookName()+" has been allocated for you!! Happy Learning");
         System.out.println("===Book has been borrowed successfully...!");
@@ -204,32 +219,42 @@ public class Librarian extends User{
 
     void checkReturns(){
         System.out.println("=== Returns in the QUEUE ===");
-        if(db.requestsDB().isEmpty()){
+        if(db.returnsDB().isEmpty()){
             System.out.println("====NO RETURNS ARE LISTED====");
+            return;
         }
         for(ReturnRequests r:db.returnsDB()){
+            if(!isAvailable(r.requestedBook.getISBN())){
+                r.requestedUser.Notify("Please return a valid Book: Either the Book "+r.requestedBook.getBookName()+"doesn't belong here or Invalid ISBN..!");
+                continue;
+            }
             System.out.println("=== Book "+r.requestedBook.getBookName()+ " return approval is processing....====");
             approveReturn(r);
             System.out.println("===RETURN IS SUCCESSFUL... Database is updated...!===");
         }
+        db.returnsDB().clear();
         return;
     }
 
 
-     //Upcoming Features Features....to be added once remaining dev completed
+    //Upcoming Features Features....to be added once remaining dev completed
     void addFine(){
         System.out.println("Fined user");
     }
     
     void approveReturn(ReturnRequests curRequest){
+        System.out.println("Updating the Database with new Return..!");
         db.getBook(curRequest.requestedBook.getISBN()).setNoOfCopies(1);
+        for(borrowalInfo b: db.getActiveBorrowals(curRequest.requestedUser)){
+            if(b.getBookName().getISBN().equals(curRequest.requestedBook.getISBN())){
+                b.setBorrowStatus(false);
+            }
+        }
         curRequest.requestedUser.Notify("Return request of Book c"+curRequest.requestedBook.getBookName()+" has been approved...!");
+        System.out.println("Thank you for utilizing Library Services...! Visit Again!");
     }
  
     void rejectBorrowal(){
         System.out.println("Book is not available!! Check after few Days...");
     }
-    // updateBookDetails()
-    // updateUserInfo()
-    // "Add Fine","Accept Fine","Withdraw Fine"
 }
