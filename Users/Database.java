@@ -56,7 +56,7 @@ class Database {
         return booksData;
     }
 
-    // To check User presence
+    // To check User presence - valid
     public boolean userExistence(String email){
         if(usersData.containsKey(email)){
             return true;
@@ -64,9 +64,21 @@ class Database {
         return false;
     }
 
-    //Check for Book existence
+    //Check for Book existence - valid
     public boolean bookExistence(String ISBN){
         if(booksData.containsKey(ISBN)){
+            return true;
+        }
+        return false;
+    }
+
+     //To check book presence
+    boolean isAvailable(String ISBN){
+        if(bookExistence(ISBN)){
+            if(getBook(ISBN).getNoOfCopies() < 1){
+                System.out.println("All Copies are borrowed");
+                return false;
+            }
             return true;
         }
         return false;

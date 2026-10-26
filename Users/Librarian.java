@@ -114,18 +114,6 @@ public class Librarian extends User{
     }
 
      //Book Functionalities....
-    
-    //To check book presence
-    boolean isAvailable(String ISBN){
-        if(db.bookExistence(ISBN)){
-            if(db.getBook(ISBN).getNoOfCopies() < 1){
-                System.out.println("All Copies are borrowed");
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
 
     void addBook(){
         System.out.println("=====> Adding a Book to the Library <=====");
@@ -191,7 +179,7 @@ public class Librarian extends User{
             for(borrowRequests req : db.requestsDB()){
                 Book book = req.requestedBook;
                 String ISBN = book.getISBN();
-                if(isAvailable(ISBN)){
+                if(db.isAvailable(ISBN)){
                     System.out.println("USER \""+ req.requestedUser.firstName + "\"has requested for the Book \"" + req.requestedBook.getBookName() +"\" and it is Available..!");
                     System.out.println("===Allocating Book to the User===");
                     System.out.println("===Updating the User DB with latest Borrowals===");
@@ -224,7 +212,7 @@ public class Librarian extends User{
             return;
         }
         for(ReturnRequests r:db.returnsDB()){
-            if(!isAvailable(r.requestedBook.getISBN())){
+            if(!db.isAvailable(r.requestedBook.getISBN())){
                 r.requestedUser.Notify("Please return a valid Book: Either the Book "+r.requestedBook.getBookName()+"doesn't belong here or Invalid ISBN..!");
                 continue;
             }
